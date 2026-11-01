@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1c5aa6">
+<title>Test Constitución 1978</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: one narrow column, phone-first; a sticky exam bar during the test; options as large tap targets */
+:root{
+  --paper:#f4f6f9; --card:#ffffff; --ink:#14213a; --muted:#5b6780; --line:#d9dfe9;
+  --accent:#1c5aa6; --accent-ink:#ffffff; --accent-soft:#e3ecf8;
+  --gold:#b7861b; --ok:#1f7a4d; --ok-soft:#e2f3ea; --ko:#b3362f; --ko-soft:#f9e4e2;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f1522; --card:#172033; --ink:#e7ecf5; --muted:#9aa6bd; --line:#2a3650;
+  --accent:#6fa3e8; --accent-ink:#0b1220; --accent-soft:#1d2d4a;
+  --gold:#e0b552; --ok:#5cc58f; --ok-soft:#163327; --ko:#f0827a; --ko-soft:#3a1d1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1522; --card:#172033; --ink:#e7ecf5; --muted:#9aa6bd; --line:#2a3650;
+  --accent:#6fa3e8; --accent-ink:#0b1220; --accent-soft:#1d2d4a;
+  --gold:#e0b552; --ok:#5cc58f; --ok-soft:#163327; --ko:#f0827a; --ko-soft:#3a1d1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:640px;margin:0 auto;padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1{font-family:var(--serif);font-size:1.9rem;line-height:1.15;font-weight:700}
+h2{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+p{margin:0}
+.eyebrow{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.lede{color:var(--muted);max-width:60ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font:inherit;font-size:.9rem;cursor:pointer;display:inline-flex;gap:6px;align-items:center;min-height:40px}
+.chip .n{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.8rem}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.8}
+.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:6px}
+.seg button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:10px 6px;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.hint{font-size:.85rem;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:10px;padding:14px 18px;font:inherit;font-weight:700;cursor:pointer;min-height:50px;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.btn.small{min-height:40px;padding:8px 12px;font-size:.9rem;font-weight:600}
+.btn.danger{background:transparent;color:var(--ko);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.wide{width:100%}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.linkish{background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.toggle{display:flex;gap:10px;align-items:center;font-size:.95rem}
+.toggle input{width:20px;height:20px;accent-color:var(--accent)}
+
+/* Quiz */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding-block:10px 8px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
+.bar .row{justify-content:space-between}
+.meta{font-variant-numeric:tabular-nums;font-size:.9rem;color:var(--muted);font-weight:600}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
+.timer.low{color:var(--ko)}
+.track{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.track i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.tag{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.qtext{font-family:var(--serif);font-size:1.25rem;line-height:1.4;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:12px;font:inherit;cursor:pointer;min-height:52px}
+.opt .l{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:.85rem;color:var(--muted)}
+.opt span:last-child{min-width:0;padding-top:2px}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .l{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .l{background:var(--ok);border-color:var(--ok);color:var(--card)}
+.opt.wrong{border-color:var(--ko);background:var(--ko-soft)}
+.opt.wrong .l{background:var(--ko);border-color:var(--ko);color:var(--card)}
+.opt:disabled{cursor:default}
+.feedback{border-left:3px solid var(--ok);padding:10px 12px;background:var(--card);border-radius:0 8px 8px 0}
+.feedback.bad{border-left-color:var(--ko)}
+.feedback.blank{border-left-color:var(--gold)}
+.feedback b{display:block;margin-bottom:2px}
+.feedback .ref{color:var(--muted);font-size:.92rem}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.confirm{border:1px solid var(--gold);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--card)}
+
+/* Results */
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.big{font-family:var(--serif);font-size:3rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:1.1rem;color:var(--muted);font-weight:600}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.8rem;font-weight:700}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.ko{background:var(--ko-soft);color:var(--ko)}
+.review{display:flex;flex-direction:column;gap:12px}
+.ritem{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.ritem .qq{font-family:var(--serif);font-weight:600}
+.ritem .a{font-size:.92rem}
+.ritem .a.ko{color:var(--ko)} .ritem .a.ok{color:var(--ok)}
+.ritem .ref{font-size:.88rem;color:var(--muted)}
+
+/* Import */
+textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;font-size:.95rem;padding:10px}
+textarea{min-height:180px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.92rem}
+pre.example{margin:0;background:var(--paper);border:1px dashed var(--line);border-radius:8px;padding:10px;font-size:.8rem;overflow-x:auto;color:var(--muted)}
+.msg{font-size:.92rem;padding:10px;border-radius:8px;background:var(--accent-soft)}
+.msg.err{background:var(--ko-soft);color:var(--ko)}
+.banklist{display:flex;flex-direction:column;gap:6px}
+.banklist .row{justify-content:space-between;border-bottom:1px solid var(--line);padding-block:6px}
+.resume{border-color:var(--gold)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} [hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HOME -->
+<section id="home" style="display:flex;flex-direction:column;gap:20px">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <span class="eyebrow">Gestión A2 · Bloque I</span>
+    <h1>Test de la Constitución de 1978</h1>
+    <p class="lede">Practica con tus preguntas y la misma regla del examen: cada error resta un tercio de acierto y las respuestas en blanco no puntúan.</p>
+  </header>
+
+  <!-- Empty state -->
+  <div class="panel resume" id="emptyBox" hidden>
+    <strong>Carga tu archivo de preguntas</strong>
+    <p class="hint">Elige el Word con las preguntas marcadas con ✔ en la respuesta correcta. Las preguntas se separan por títulos según los encabezados del archivo («TÍTULO PRELIMINAR», «TÍTULO I»…) y se quedan guardadas solo en este navegador.</p>
+    <label class="btn wide" for="fileHome" style="text-align:center">Elegir archivo .docx</label>
+    <input type="file" id="fileHome" accept=".docx,.txt" hidden>
+    <div id="homeMsg" class="msg" hidden></div>
+    <button class="linkish" id="openImport2" style="align-self:flex-start">O pega el texto a mano</button>
+  </div>
+
+  <div class="panel resume" id="resumeBox" hidden>
+    <strong id="resumeText">Tienes un test a medias.</strong>
+    <div class="row">
+      <button class="btn small" id="resumeBtn">Continuar</button>
+      <button class="btn small ghost" id="discardBtn">Descartar</button>
+    </div>
+  </div>
+
+  <div id="practiceArea" style="display:flex;flex-direction:column;gap:20px">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <h2>Títulos</h2>
+        <div class="row"><button class="linkish" id="allBtn">Todos</button><button class="linkish" id="noneBtn">Ninguno</button></div>
+      </div>
+      <div class="chips" id="topicChips"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Número de preguntas</h2>
+      <div class="seg" id="countSeg"></div>
+      <h2>Modo</h2>
+      <div class="seg" id="modeSeg">
+        <button data-mode="practica" aria-pressed="true">Práctica</button>
+        <button data-mode="simulacro" aria-pressed="false">Simulacro</button>
+      </div>
+      <p class="hint" id="modeHint"></p>
+      <label class="toggle"><input type="checkbox" id="onlyFails"> Solo las que fallé la última vez</label>
+    </div>
+
+    <button class="btn wide" id="startBtn">Empezar</button>
+    <p class="hint" id="poolHint" style="text-align:center"></p>
+
+    <div class="panel">
+      <h2>Tu progreso</h2>
+      <div id="progress" class="hint"></div>
+      <div class="row"><button class="btn small danger" id="resetStats">Borrar historial</button></div>
+    </div>
+
+    <div class="panel">
+      <h2>Tus preguntas</h2>
+      <div class="banklist" id="bankList"></div>
+      <div class="row">
+        <label class="btn small ghost" for="fileHome2">Cargar otro archivo</label>
+        <input type="file" id="fileHome2" accept=".docx,.txt" hidden>
+        <button class="btn small ghost" id="openImport">Pegar texto</button>
+        <button class="btn small ghost" id="backupBtn">Copiar copia de seguridad</button>
+      </div>
+      <div id="homeMsg2" class="msg" hidden></div>
+      <p class="hint" id="backupMsg" hidden></p>
+      <div class="row"><button class="btn small danger" id="wipeBtn">Borrar todas mis preguntas</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPORT -->
+<section id="importView" hidden style="display:flex;flex-direction:column;gap:16px">
+  <div class="row" style="justify-content:space-between">
+    <h1 style="font-size:1.5rem">Pegar preguntas</h1>
+    <button class="btn small ghost" id="closeImport">Volver</button>
+  </div>
+  <div class="panel">
+    <p>Pega las preguntas con la correcta marcada con ✔. Si no la marcas, añade las soluciones en el segundo cuadro.</p>
+    <pre class="example">TÍTULO II
+1. ¿Quién sanciona las leyes?
+a) El Presidente del Gobierno
+b) El Rey ✔
+c) Las Cortes Generales
+d) El Tribunal Constitucional</pre>
+    <label class="f" for="impTag">Título si el texto no lo indica
+      <input type="text" id="impTag" placeholder="Ej.: Título II" value="Mis preguntas">
+    </label>
+    <label class="f" for="impQ">Preguntas
+      <textarea id="impQ" placeholder="1. Texto de la pregunta&#10;a) ...&#10;b) ... ✔&#10;c) ...&#10;d) ..."></textarea>
+    </label>
+    <label class="f" for="impK">Soluciones (opcional)
+      <textarea id="impK" style="min-height:90px" placeholder="1-b, 2-c, 3-a ..."></textarea>
+    </label>
+    <div id="impMsg" class="msg" hidden></div>
+    <div class="row">
+      <button class="btn small ghost" id="checkImp">Comprobar</button>
+      <button class="btn small" id="saveImp">Guardar preguntas</button>
+    </div>
+    <p class="hint">Para restaurar una copia de seguridad, pégala en el cuadro de preguntas y pulsa Guardar.</p>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" hidden style="display:flex;flex-direction:column;gap:16px">
+  <div class="bar">
+    <div class="row">
+      <button class="linkish" id="quitBtn">Salir</button>
+      <span class="meta" id="qCounter">1 / 10</span>
+      <span class="timer" id="timer"></span>
+    </div>
+    <div class="track"><i id="trackFill"></i></div>
+  </div>
+  <span class="tag" id="qTag"></span>
+  <p class="qtext" id="qText"></p>
+  <div class="opts" id="opts"></div>
+  <div id="fb" hidden></div>
+  <div class="actions" id="quizActions"></div>
+  <div class="confirm" id="confirmBox" hidden></div>
+</section>
+
+<!-- RESULT -->
+<section id="result" hidden style="display:flex;flex-direction:column;gap:20px"></section>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+/* ---------- storage helpers ---------- */
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+const K_BANK="ce-mybank-v2", K_STATS="ce-stats-v2", K_RUN="ce-run-v2", K_PREFS="ce-prefs-v2";
+
+/* ---------- bank ---------- */
+let BANK = {};
+let MINE = LS.get(K_BANK, []); // [{id, tag, n, q, o:[correct,...]}]
+function buildBank(){
+  BANK = {};
+  MINE.forEach(m=>{ BANK[m.id]={id:m.id,topic:"tag:"+m.tag,label:m.tag,q:m.q,o:m.o,ref:m.n?("Pregunta n.º "+m.n):""}; });
+}
+function tags(){ return [...new Set(MINE.map(m=>m.tag))]; }
+function topicList(){ return tags().map(t=>({key:"tag:"+t,label:t})); }
+
+/* ---------- prefs ---------- */
+let prefs = Object.assign({topics:null, count:20, mode:"practica", onlyFails:false}, LS.get(K_PREFS,{}));
+let stats = LS.get(K_STATS, {});
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LET = ["a","b","c","d","e","f"];
+
+function show(id){ ["home","importView","quiz","result"].forEach(s=>$("#"+s).hidden = s!==id); window.scrollTo(0,0); }
+
+/* ---------- home ---------- */
+function pool(){
+  let ids = Object.values(BANK).filter(q=>prefs.topics.includes(q.topic)).map(q=>q.id);
+  if(prefs.onlyFails) ids = ids.filter(id=>stats[id] && stats[id].last===0);
+  return ids;
+}
+function renderHome(){
+  buildBank();
+  const has = MINE.length>0;
+  $("#emptyBox").hidden = has;
+  $("#practiceArea").hidden = !has;
+  const valid = topicList().map(t=>t.key);
+  if(!Array.isArray(prefs.topics)) prefs.topics = valid.slice();
+  prefs.topics = prefs.topics.filter(k=>valid.includes(k));
+  const chips = $("#topicChips"); chips.innerHTML="";
+  topicList().forEach(t=>{
+    const n = Object.values(BANK).filter(q=>q.topic===t.key).length;
+    const b = document.createElement("button");
+    b.className="chip"; b.type="button";
+    b.setAttribute("aria-pressed", prefs.topics.includes(t.key));
+    b.innerHTML = esc(t.label)+' <span class="n">'+n+'</span>';
+    b.onclick=()=>{ const i=prefs.topics.indexOf(t.key); i<0?prefs.topics.push(t.key):prefs.topics.splice(i,1); savePrefs(); renderHome(); };
+    chips.appendChild(b);
+  });
+  const seg=$("#countSeg"); seg.innerHTML="";
+  [10,20,40,80,0].forEach(c=>{
+    const b=document.createElement("button"); b.type="button";
+    b.textContent = c? c : "Todas"; b.setAttribute("aria-pressed", prefs.count===c);
+    b.onclick=()=>{prefs.count=c; savePrefs(); renderHome();}; seg.appendChild(b);
+  });
+  document.querySelectorAll("#modeSeg button").forEach(b=>{
+    b.setAttribute("aria-pressed", b.dataset.mode===prefs.mode);
+    b.onclick=()=>{prefs.mode=b.dataset.mode; savePrefs(); renderHome();};
+  });
+  $("#modeHint").textContent = prefs.mode==="practica"
+    ? "Ves la respuesta correcta justo después de contestar."
+    : "Corriges al final, con tiempo límite al ritmo del examen real (90 minutos para 80 preguntas).";
+  $("#onlyFails").checked = prefs.onlyFails;
+  const p = pool(); const n = prefs.count? Math.min(prefs.count,p.length) : p.length;
+  $("#startBtn").disabled = p.length===0;
+  $("#poolHint").textContent = p.length===0
+    ? (prefs.onlyFails ? "No tienes preguntas falladas en estos títulos." : "Elige al menos un título.")
+    : n+" preguntas de "+p.length+" disponibles";
+  const bl=$("#bankList"); bl.innerHTML="";
+  tags().forEach(t=>{
+    const r=document.createElement("div"); r.className="row";
+    const c=MINE.filter(m=>m.tag===t).length;
+    r.innerHTML='<span>'+esc(t)+' <span class="hint">· '+c+'</span></span>';
+    const d=document.createElement("button"); d.className="btn small danger"; d.textContent="Borrar";
+    d.onclick=()=>{ if(d.dataset.armed){ MINE=MINE.filter(m=>m.tag!==t); LS.set(K_BANK,MINE); renderHome(); } else { d.dataset.armed=1; d.textContent="¿Seguro? Pulsa otra vez"; } };
+    r.appendChild(d); bl.appendChild(r);
+  });
+  renderProgress();
+  const run = LS.get(K_RUN,null);
+  if(run && run.ids && run.ids.length && run.ids.every(id=>BANK[id])){
+    const done = Object.keys(run.ans).length;
+    $("#resumeBox").hidden=false;
+    $("#resumeText").textContent = "Tienes un "+(run.mode==="practica"?"test de práctica":"simulacro")+" a medias: "+done+" de "+run.ids.length+" respondidas.";
+  } else $("#resumeBox").hidden=true;
+}
+function renderProgress(){
+  const rows = topicList().map(t=>{
+    const ids = Object.values(BANK).filter(q=>q.topic===t.key).map(q=>q.id);
+    const seen = ids.filter(id=>stats[id]);
+    if(!seen.length) return null;
+    const ok = seen.filter(id=>stats[id].last===1).length;
+    return '<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding-block:6px"><span>'+esc(t.label)+'</span><span style="font-variant-numeric:tabular-nums">'+ok+' / '+ids.length+' bien · '+(seen.length-ok)+' por repasar</span></div>';
+  }).filter(Boolean);
+  $("#progress").innerHTML = rows.length ? rows.join("") : "Cuando hagas tests, aquí verás cuántas preguntas de cada título dominas.";
+}
+function savePrefs(){ LS.set(K_PREFS,prefs); }
+$("#allBtn").onclick=()=>{prefs.topics=topicList().map(t=>t.key); savePrefs(); renderHome();};
+$("#noneBtn").onclick=()=>{prefs.topics=[]; savePrefs(); renderHome();};
+$("#onlyFails").onchange=e=>{prefs.onlyFails=e.target.checked; savePrefs(); renderHome();};
+function armed(btn,label,fn){ btn.onclick=function(){ if(this.dataset.armed){ delete this.dataset.armed; this.textContent=label; fn(); } else { this.dataset.armed=1; this.textContent="¿Seguro? Pulsa otra vez"; } }; }
+armed($("#resetStats"),"Borrar historial",()=>{ stats={}; LS.set(K_STATS,stats); renderHome(); });
+armed($("#wipeBtn"),"Borrar todas mis preguntas",()=>{ MINE=[]; LS.set(K_BANK,MINE); LS.del(K_RUN); prefs.topics=null; savePrefs(); renderHome(); });
+
+/* ---------- run ---------- */
+let run=null, timerId=null;
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function startRun(ids, mode){
+  const perm={}; ids.forEach(id=>perm[id]=shuffle(BANK[id].o.map((_,i)=>i)));
+  run={ids, i:0, ans:{}, perm, mode, deadline: mode==="simulacro" ? Date.now()+Math.round(ids.length*67.5)*1000 : null};
+  saveRun(); show("quiz"); renderQ(); tick();
+}
+function saveRun(){ LS.set(K_RUN, run); }
+$("#startBtn").onclick=()=>{
+  let ids = shuffle(pool()); if(prefs.count) ids=ids.slice(0,prefs.count);
+  startRun(ids, prefs.mode);
+};
+$("#resumeBtn").onclick=()=>{ run=LS.get(K_RUN,null); if(!run) return; if(!run.i||run.i>=run.ids.length) run.i=0; show("quiz"); renderQ(); tick(); };
+$("#discardBtn").onclick=()=>{ LS.del(K_RUN); renderHome(); };
+
+function tick(){
+  clearInterval(timerId);
+  const el=$("#timer");
+  if(!run.deadline){ el.textContent=""; return; }
+  const f=()=>{
+    const left=Math.max(0,Math.round((run.deadline-Date.now())/1000));
+    el.textContent = Math.floor(left/60)+":"+String(left%60).padStart(2,"0");
+    el.classList.toggle("low", left<120);
+    if(left<=0){ clearInterval(timerId); finish(); }
+  };
+  f(); timerId=setInterval(f,1000);
+}
+
+function renderQ(){
+  const id=run.ids[run.i], q=BANK[id], perm=run.perm[id];
+  const answered = id in run.ans;
+  const practice = run.mode==="practica";
+  const locked = practice && answered;
+  $("#qCounter").textContent=(run.i+1)+" / "+run.ids.length;
+  $("#trackFill").style.width = (100*Object.keys(run.ans).length/run.ids.length)+"%";
+  $("#qTag").textContent=q.label;
+  $("#qText").textContent=q.q;
+  $("#confirmBox").hidden=true;
+  const box=$("#opts"); box.innerHTML="";
+  perm.forEach((oi,k)=>{
+    const b=document.createElement("button"); b.type="button"; b.className="opt";
+    b.innerHTML='<span class="l">'+LET[k]+'</span><span>'+esc(q.o[oi])+'</span>';
+    const mine = run.ans[id];
+    if(locked){
+      b.disabled=true;
+      if(oi===0) b.classList.add("right");
+      else if(mine===oi) b.classList.add("wrong");
+    } else if(mine===oi) b.classList.add("sel");
+    b.onclick=()=>choose(oi);
+    box.appendChild(b);
+  });
+  const fb=$("#fb");
+  if(locked){
+    const mine=run.ans[id];
+    const kind = mine===null ? "blank" : (mine===0 ? "" : "bad");
+    const title = mine===null ? "En blanco. No suma ni resta." : (mine===0 ? "Correcta." : "Incorrecta. Resta 1/3.");
+    const right = mine===0 ? "" : "<div>Respuesta correcta: <strong>"+esc(q.o[0])+"</strong></div>";
+    fb.className="feedback "+kind;
+    fb.innerHTML="<b>"+title+"</b>"+right+(q.ref?'<div class="ref">'+esc(q.ref)+'</div>':"");
+    fb.hidden=false;
+  } else fb.hidden=true;
+  const act=$("#quizActions"); act.innerHTML="";
+  const last = run.i===run.ids.length-1;
+  if(practice){
+    if(!answered){
+      act.append(mkBtn("No lo sé","btn ghost",()=>choose(null)));
+      act.append(mkBtn("Saltar","btn ghost",()=>{ run.i=(run.i+1)%run.ids.length; saveRun(); renderQ(); }));
+    } else {
+      const remaining = run.ids.length-Object.keys(run.ans).length;
+      const b = mkBtn(remaining===0 ? "Ver resultado" : "Siguiente","btn",()=>{
+        if(remaining===0) return finish();
+        let j=run.i; do{ j=(j+1)%run.ids.length; }while(run.ids[j] in run.ans);
+        run.i=j; saveRun(); renderQ();
+      });
+      b.style.gridColumn="1 / -1"; act.append(b);
+    }
+  } else {
+    const prev=mkBtn("Anterior","btn ghost",()=>{run.i--; saveRun(); renderQ();}); prev.disabled=run.i===0;
+    const next= last ? mkBtn("Entregar","btn",askFinish) : mkBtn("Siguiente","btn",()=>{run.i++; saveRun(); renderQ();});
+    act.append(prev,next);
+    if(id in run.ans && run.ans[id]!==null){
+      const clr=mkBtn("Dejar en blanco","btn ghost small",()=>{ delete run.ans[id]; saveRun(); renderQ(); });
+      clr.style.gridColumn="1 / -1"; act.append(clr);
+    }
+    if(!last){ const e=mkBtn("Entregar ahora","btn ghost small",askFinish); e.style.gridColumn="1 / -1"; act.append(e); }
+  }
+}
+function mkBtn(t,c,f){ const b=document.createElement("button"); b.type="button"; b.className=c; b.textContent=t; b.onclick=f; return b; }
+function choose(oi){
+  const id=run.ids[run.i];
+  if(run.mode==="practica"){
+    if(id in run.ans) return;
+    run.ans[id]=oi; record(id,oi);
+  } else run.ans[id]=oi;
+  saveRun(); renderQ();
+  if(run.mode==="practica") $("#fb").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function record(id,oi){
+  const s=stats[id]||{ok:0,ko:0};
+  if(oi===0){s.ok++; s.last=1;} else {s.ko++; s.last=0;}
+  stats[id]=s; LS.set(K_STATS,stats);
+}
+function askFinish(){
+  const blank = run.ids.filter(id=>!(id in run.ans)||run.ans[id]===null).length;
+  const c=$("#confirmBox");
+  c.innerHTML='<strong>¿Entregar el simulacro?</strong><span class="hint">'+(blank? "Te quedan "+blank+" preguntas en blanco." : "Has respondido todas.")+'</span>';
+  const r=document.createElement("div"); r.className="row";
+  r.append(mkBtn("Entregar","btn small",finish), mkBtn("Seguir respondiendo","btn small ghost",()=>{c.hidden=true;}));
+  c.append(r); c.hidden=false; c.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("#quitBtn").onclick=()=>{ clearInterval(timerId); saveRun(); renderHome(); show("home"); };
+
+function finish(){
+  clearInterval(timerId);
+  if(run.mode==="simulacro") run.ids.forEach(id=>record(id, id in run.ans ? run.ans[id] : null));
+  let A=0,E=0,B=0; const wrong=[];
+  run.ids.forEach(id=>{
+    const a = id in run.ans ? run.ans[id] : null;
+    if(a===0) A++; else if(a===null){B++; wrong.push(id);} else {E++; wrong.push(id);}
+  });
+  const n=run.ids.length, neto=A-E/3, nota10=Math.max(0,neto)/n*10, nota30=Math.max(0,neto)/n*30;
+  const done=run; LS.del(K_RUN);
+  const r=$("#result");
+  const fmt=x=>x.toLocaleString("es-ES",{maximumFractionDigits:2});
+  r.innerHTML =
+    '<header style="display:flex;flex-direction:column;gap:8px"><span class="eyebrow">'+(done.mode==="practica"?"Práctica":"Simulacro")+' · '+n+' preguntas</span>'+
+    '<div class="big">'+fmt(nota10)+' <small>/ 10</small></div>'+
+    '<div class="row"><span class="pill '+(nota30>=15?"ok":"ko")+'">'+fmt(nota30)+' / 30 en la escala del examen</span><span class="hint">Para aprobar hay que llegar a 15.</span></div></header>'+
+    '<div class="score"><div class="stat"><b style="color:var(--ok)">'+A+'</b><small>Aciertos</small></div><div class="stat"><b style="color:var(--ko)">'+E+'</b><small>Errores</small></div><div class="stat"><b>'+B+'</b><small>En blanco</small></div></div>'+
+    '<p class="hint">Puntuación neta: '+A+' − '+E+'/3 = <strong>'+fmt(neto)+'</strong> aciertos netos.</p>'+
+    '<div class="row" id="resActs"></div>'+
+    (wrong.length ? '<h2>Para repasar</h2><div class="review">'+wrong.map(id=>{
+      const q=BANK[id], a= id in done.ans ? done.ans[id] : null;
+      return '<div class="ritem"><span class="tag">'+esc(q.label)+(q.ref?' · '+esc(q.ref):'')+'</span><div class="qq">'+esc(q.q)+'</div>'+
+        (a===null ? '<div class="a">Sin responder</div>' : '<div class="a ko">Tu respuesta: '+esc(q.o[a])+'</div>')+
+        '<div class="a ok">Correcta: '+esc(q.o[0])+'</div></div>';
+    }).join("")+'</div>' : '<p>Todo correcto. Prueba con otro título o sube el número de preguntas.</p>');
+  const acts=$("#resActs");
+  if(wrong.length) acts.append(mkBtn("Repetir las "+wrong.length+" falladas","btn small",()=>startRun(shuffle(wrong),done.mode)));
+  acts.append(mkBtn("Volver al inicio","btn small ghost",()=>{renderHome(); show("home");}));
+  show("result");
+}
+
+/* ---------- parsing ---------- */
+const CHECK=/\s*[✔✓✅]️?\s*/;
+const SMALL=new Set(["y","de","del","la","las","los","el","e","a"]);
+function niceTag(s){
+  return s.trim().replace(/\s+/g," ").split(" ").map((w,i)=>{
+    if(/^[IVXLC]+$/.test(w)) return w;
+    const l=w.toLocaleLowerCase("es");
+    return (i>0 && SMALL.has(l)) ? l : l.charAt(0).toLocaleUpperCase("es")+l.slice(1);
+  }).join(" ");
+}
+function hash(s){ let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return (h>>>0).toString(36); }
+const RE_KEYCELL=/(\d{1,4})\s*[.\-–—:)=]*\s*([a-fA-F])(?![\wáéíóúñÁÉÍÓÚÑ])/g;
+function parseImport(text,keyText,defTag){
+  const qs=[]; let cur=null, tag=defTag||"Mis preguntas";
+  const key={};
+  const addKeys=s=>{ let m; RE_KEYCELL.lastIndex=0; while((m=RE_KEYCELL.exec(s))) key[+m[1]]=m[2].toLowerCase().charCodeAt(0)-97; };
+  text.replace(/\r/g,"").split("\n").forEach(raw=>{
+    const line=raw.replace(/ /g," ").trim(); if(!line) return;
+    // answer-sheet lines: "1. C   2. B ..." or a single cell "1. C"
+    if(/^(\d{1,4}\s*[.\-–—:)=]?\s*[a-fA-F]\s*)+$/.test(line)){ addKeys(line); cur=null; return; }
+    if(/^[-\s]+$/.test(line)) return;
+    const mo=line.match(/^([a-fA-F])\s*[).\-–:]\s*(.*)$/);
+    const mq=line.match(/^(\d{1,4})\s*[.\-–—)º:]+\s*(.+)$/);
+    const isHead=!mo && !mq && line.length>=5 && line.length<=80 && /[A-ZÁÉÍÓÚÑ]/.test(line) && line===line.toLocaleUpperCase("es") && !/[✔✓]/.test(line);
+    if(isHead){ tag=niceTag(line); cur=null; return; }
+    if(mo && cur){ const ok=CHECK.test(mo[2]); cur.o.push(mo[2].replace(CHECK," ").trim()); if(ok) cur.marks.push(cur.o.length-1); }
+    else if(mq){ cur={n:+mq[1],q:mq[2].trim(),o:[],marks:[],tag}; qs.push(cur); }
+    else if(cur && !/^\(.*\)$/.test(line)){
+      if(cur.o.length){ const i=cur.o.length-1; if(CHECK.test(line)) cur.marks.push(i); cur.o[i]+=" "+line.replace(CHECK," ").trim(); }
+      else cur.q+=" "+line;
+    }
+  });
+  if(keyText) addKeys(keyText);
+  const ok=[], noKey=[], bad=[];
+  qs.forEach(q=>{
+    if(q.o.length<2||!q.q){ bad.push(q.n); return; }
+    let c = q.marks.length===1 ? q.marks[0] : (q.n in key ? key[q.n] : -1);
+    if(c<0||c>=q.o.length){ noKey.push(q.n); return; }
+    const o=[q.o[c]].concat(q.o.filter((_,i)=>i!==c));
+    ok.push({id:"q"+hash(q.tag+"|"+q.n+"|"+q.q), tag:q.tag, n:q.n, q:q.q, o});
+  });
+  return {ok,noKey,bad,total:qs.length};
+}
+function describe(r){
+  const list=a=>a.length>12 ? a.slice(0,12).join(", ")+"… ("+a.length+")" : a.join(", ");
+  let s=r.ok.length+" preguntas listas.";
+  if(r.noKey.length) s+=" Sin respuesta marcada: "+list(r.noKey)+".";
+  if(r.bad.length) s+=" Incompletas, no se cargan: "+list(r.bad)+".";
+  return s;
+}
+function storeQuestions(list, replace){
+  const before = replace ? [] : MINE;
+  const seen=new Set(before.map(m=>m.id));
+  const add=list.filter(q=>!seen.has(q.id)&&(seen.add(q.id),true));
+  const next=before.concat(add);
+  if(!LS.set(K_BANK,next)) return -1;
+  MINE=next; LS.del(K_RUN); prefs.topics=null; savePrefs();
+  return add.length;
+}
+
+/* ---------- file loading ---------- */
+function decodeXml(s){ return s.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n)).replace(/&amp;/g,"&"); }
+async function readDocx(file){
+  if(typeof JSZip==="undefined") throw new Error("No se ha podido cargar el lector de Word. Comprueba tu conexión y vuelve a intentarlo.");
+  const zip=await JSZip.loadAsync(file);
+  const f=zip.file("word/document.xml"); if(!f) throw new Error("El archivo no parece un documento de Word (.docx).");
+  const xml=await f.async("string");
+  const paras=xml.match(/<w:p[ >][\s\S]*?<\/w:p>/g)||[];
+  return paras.map(p=>decodeXml(p.replace(/<w:tab\/>/g," ").replace(/<w:br\/>/g,"\n").replace(/<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>|<[^>]+>/g,(_,t)=>t||""))).join("\n");
+}
+async function handleFile(input,msgEl){
+  const file=input.files[0]; if(!file) return;
+  const m=$(msgEl); m.className="msg"; m.textContent="Leyendo «"+file.name+"»…"; m.hidden=false;
+  try{
+    const text = /\.docx$/i.test(file.name) ? await readDocx(file) : await file.text();
+    const r=parseImport(text,"", "Mis preguntas");
+    if(!r.ok.length){ m.className="msg err"; m.textContent = r.total ? describe(r)+" No se ha guardado nada." : "No encuentro preguntas en el archivo. Cada pregunta debe empezar por su número («1.») y cada opción por su letra («a)»)."; input.value=""; return; }
+    const n=storeQuestions(r.ok, true);
+    if(n<0){ m.className="msg err"; m.textContent="El navegador no deja guardar tantas preguntas. Prueba en otro navegador o fuera del modo privado."; input.value=""; return; }
+    renderHome();
+    const m2=$( MINE.length ? "#homeMsg2" : msgEl );
+    m2.className="msg"; m2.textContent="Cargadas "+n+" preguntas en "+tags().length+" títulos. "+(r.noKey.length||r.bad.length ? describe(r).replace(/^\d+ preguntas listas\. /,"") : ""); m2.hidden=false;
+  }catch(e){ m.className="msg err"; m.textContent=e.message||"No he podido leer el archivo."; }
+  input.value="";
+}
+$("#fileHome").onchange=e=>handleFile(e.target,"#homeMsg");
+$("#fileHome2").onchange=e=>handleFile(e.target,"#homeMsg2");
+
+/* ---------- paste import ---------- */
+$("#openImport").onclick=()=>show("importView");
+$("#openImport2").onclick=()=>show("importView");
+$("#closeImport").onclick=()=>{ renderHome(); show("home"); };
+function impMsg(t,err){ const m=$("#impMsg"); m.textContent=t; m.className="msg"+(err?" err":""); m.hidden=false; }
+$("#checkImp").onclick=()=>{
+  const t=$("#impQ").value.trim();
+  if(t.startsWith("[")) return impMsg("Parece una copia de seguridad. Pulsa Guardar para restaurarla.");
+  const r=parseImport(t,$("#impK").value,$("#impTag").value.trim()||"Mis preguntas");
+  if(!r.total) return impMsg("No encuentro preguntas. Cada pregunta debe empezar por su número, por ejemplo «1.».",true);
+  impMsg(describe(r), !r.ok.length);
+};
+$("#saveImp").onclick=()=>{
+  const t=$("#impQ").value.trim();
+  if(t.startsWith("[")){
+    try{
+      const arr=JSON.parse(t); if(!Array.isArray(arr)) throw 0;
+      const n=storeQuestions(arr.filter(x=>x&&x.id&&x.q&&Array.isArray(x.o)&&x.tag), false);
+      if(n<0) return impMsg("El navegador no deja guardar tantas preguntas.",true);
+      impMsg("Copia restaurada: "+n+" preguntas añadidas."); $("#impQ").value=""; return;
+    }catch(e){ return impMsg("La copia de seguridad no es válida. Pégala completa, desde el primer [ hasta el último ].",true); }
+  }
+  const r=parseImport(t,$("#impK").value,($("#impTag").value.trim()||"Mis preguntas").slice(0,60));
+  if(!r.ok.length) return impMsg(r.total? describe(r)+" No se ha guardado nada." : "No encuentro preguntas. Cada pregunta debe empezar por su número, por ejemplo «1.».",true);
+  const n=storeQuestions(r.ok,false);
+  if(n<0) return impMsg("El navegador no deja guardar tantas preguntas.",true);
+  impMsg("Guardadas "+n+" preguntas nuevas. "+(r.noKey.length||r.bad.length ? describe(r).replace(/^\d+ preguntas listas\. /,"") : ""));
+  $("#impQ").value=""; $("#impK").value="";
+};
+$("#backupBtn").onclick=async()=>{
+  const m=$("#backupMsg"); const txt=JSON.stringify(MINE);
+  try{ await navigator.clipboard.writeText(txt); m.textContent="Copiadas "+MINE.length+" preguntas. Pégalas en otro dispositivo con «Pegar texto»."; }
+  catch(e){ m.textContent="No he podido copiar automáticamente. Usa «Cargar otro archivo» con tu Word en el otro dispositivo."; }
+  m.hidden=false;
+};
+
+renderHome(); show("home");
+</script>
+
+</body>
+</html>
