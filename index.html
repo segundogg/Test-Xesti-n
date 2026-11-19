@@ -671,6 +671,8 @@ const SMALL=new Set(["y","de","del","la","las","los","el","e","a"]);
 function niceTag(s){
   return s.trim().replace(/\s+/g," ").split(" ").map((w,i)=>{
     if(/^[IVXLC]+$/.test(w)) return w;
+    const bare=w.replace(/[()]/g,"");
+    if(/^(LO|CE|CGPJ|AGE|BOE|BOPA|UE|LBRL|TC|TSJ)$/.test(bare)) return w;
     const l=w.toLocaleLowerCase("es");
     return (i>0 && SMALL.has(l)) ? l : l.charAt(0).toLocaleUpperCase("es")+l.slice(1);
   }).join(" ");
@@ -1034,12 +1036,21 @@ function srcBlock(q){
 }
 function explBlock(q){
   const E=q.expl, wrap=document.createElement("div");
-  const m=E.match(/^(Art(?:[íi]culo|\.)?\s*\d+(?:\.\d+)*(?:\.[a-zñ]|\.\d+ª)?(?:\s*(?:bis|ter))?)\s*(CE)?\s*(?:[:.]\s*«([\s\S]*)»)?\s*$/i);
-  if(m && m[3]){
-    const L=CLAUDE_DATA.find(L=>norm0(L.g)===norm0(q.group+" "+q.tag) || norm0(L.g)===norm0(q.tag) || norm0(L.g)===norm0(q.group));
-    wrap.innerHTML='<div class="law"><div class="law-head">Lo regula el <strong>'+esc(m[1].replace(/^Art(?:[íi]culo|\.)?\s*/i,"art. "))+'</strong>'+(L?' de la '+esc(L.law):'')+':</div><blockquote>'+esc(m[3])+'</blockquote>'+(L?'<div class="law-foot"><a href="https://www.boe.es/buscar/act.php?id='+esc(L.boe)+'" target="_blank" rel="noopener">Ver la ley en el BOE</a></div>':'')+'</div>';
+  const law=(name,boe)=> name ? ' de la '+esc(name) : '';
+  // Forma "Art. X [Ley N/AAAA]: «cita»"
+  const mq=E.match(/^([^«]*?)\s*:\s*«([\s\S]*)»\s*$/);
+  if(mq){
+    let head=mq[1].trim(), lawName="";
+    const ml=head.match(/^(.*?)\s+((?:Ley Orgánica|Ley|LO)\s.*)$/i);
+    if(ml){ head=ml[1]; lawName=ml[2]; }
+    const L=CLAUDE_DATA.find(L=>[q.group+" "+q.tag,q.tag,q.group].some(x=>norm0(L.g)===norm0(x)));
+    if(!lawName && L) lawName=L.law;
+    const art=head.replace(/^Arts?(?:[íi]culos?|\.)?\s*/i, m=>/s/i.test(m.trim().replace(/\.$/,"").slice(-1))?"arts. ":"art. ");
+    wrap.innerHTML='<div class="law"><div class="law-head">Lo regula el <strong>'+esc(art)+'</strong>'+law(lawName)+':</div><blockquote>'+esc(mq[2])+'</blockquote>'+(L?'<div class="law-foot"><a href="https://www.boe.es/buscar/act.php?id='+esc(L.boe)+'" target="_blank" rel="noopener">Ver la ley en el BOE</a></div>':'')+'</div>';
     return wrap;
   }
+  // Forma "Art. X CE" (Constitución): texto oficial del artículo
+  const m=E.match(/^(Art(?:[íi]culo|\.)?\s*\d+(?:\.\d+)*(?:\.[a-zñ]|\.\d+ª)?(?:\s*(?:bis|ter))?)\s*(CE)?\s*$/i);
   if(m){
     const lab="Art. "+m[1].replace(/^Art(?:[íi]culo|\.)?\s*/i,"").replace(/\s+/g,"");
     const h=LAW.exact(q,lab);
