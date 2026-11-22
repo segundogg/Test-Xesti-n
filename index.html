@@ -162,7 +162,6 @@ select{width:100%;border:1px solid var(--line);border-radius:8px;background:var(
 .law-note{font-size:.78rem;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
-<style>[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -356,7 +355,7 @@ function migrate(){
 function buildBank(){
   BANK = {};
   const byQ={}; CLAUDE_DATA.forEach(L=>L.qs.forEach(r=>{ byQ[r[0]]={law:L.law,boe:L.boe,art:r[2],quote:r[3]}; }));
-  MINE.forEach(m=>{ const g=m.group||"Mis preguntas", t=m.tag||""; BANK[m.id]={id:m.id,group:g,tag:t,topic:g+"|"+t,label:fullLabel(g,t),q:m.q,o:m.o,ref:m.n?("Pregunta n.º "+m.n):"",user:true,expl:m.expl||"",src:byQ[m.q]||null}; });
+  MINE.forEach(m=>{ const g=m.group||"Mis preguntas", t=m.tag||""; BANK[m.id]={id:m.id,group:g,tag:t,topic:g+"|"+t,label:fullLabel(g,t),q:m.q,o:m.o,k:m.k,ref:m.n?("Pregunta n.º "+m.n):"",user:true,expl:m.expl||"",src:byQ[m.q]||null}; });
   CLAUDE_DATA.forEach(L=>L.qs.forEach(r=>{ const id="c"+hash(L.g+"|"+r[0]), t=r[4]||""; BANK[id]={id,group:L.g,tag:t,topic:L.g+"|"+t,label:fullLabel(L.g,t),q:r[0],o:r[1],ref:"",src:{law:L.law,boe:L.boe,art:r[2],quote:r[3]}}; }));
 }
 const CLAUDE_B2=new Set(CLAUDE_DATA.filter(L=>L.b===2).map(L=>L.g));
@@ -516,9 +515,16 @@ $("#mvGo").onclick=()=>{
 
 /* ---------- run ---------- */
 let run=null, timerId=null;
+const REFOPT=/anteriores|son (correctas|ciertas|falsas|incorrectas)|ningun[ao] de (las|los)|\b[a-f]\)? (y|e) [a-f]\b/i;
+function optOrder(q){
+  const idx=q.o.map((_,i)=>i);
+  if(!q.o.some(o=>REFOPT.test(o))) return shuffle(idx);
+  if(q.k!=null && q.k>=0 && q.k<q.o.length){ const r=idx.slice(1); r.splice(q.k,0,0); return r; }
+  return idx;
+}
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 function startRun(ids, mode){
-  const perm={}; ids.forEach(id=>perm[id]=shuffle(BANK[id].o.map((_,i)=>i)));
+  const perm={}; ids.forEach(id=>perm[id]=optOrder(BANK[id]));
   run={ids, i:0, ans:{}, perm, mode, deadline: mode==="simulacro" ? Date.now()+Math.round(ids.length*67.5)*1000 : null};
   saveRun(); show("quiz"); renderQ(); tick();
 }
@@ -708,7 +714,7 @@ function parseImport(text,keyText,defTag){
     let c = q.marks.length===1 ? q.marks[0] : (q.n in key ? key[q.n] : -1);
     if(c<0||c>=q.o.length){ noKey.push(q.n); return; }
     const o=[q.o[c]].concat(q.o.filter((_,i)=>i!==c));
-    const item={id:"q"+hash(q.tag+"|"+q.n+"|"+q.q), tag:q.tag, n:q.n, q:q.q, o};
+    const item={id:"q"+hash(q.tag+"|"+q.n+"|"+q.q), tag:q.tag, n:q.n, q:q.q, o, k:c};
     if(q.expl) item.expl=q.expl.slice(0,1200);
     ok.push(item);
   });
@@ -726,6 +732,8 @@ function storeQuestions(list, group, replaceGroup){
   list.forEach(q=>{ q.group=group; });
   const ids=new Set(list.map(q=>q.id));
   const before = replaceGroup ? MINE.filter(m=>(m.group||"Mis preguntas")!==group && !ids.has(m.id)) : MINE;
+  const byId=new Map(list.map(q=>[q.id,q]));
+  before.forEach(m=>{ const q=byId.get(m.id); if(q && q.k!=null) m.k=q.k; });
   const seen=new Set(before.map(m=>m.id));
   const add=list.filter(q=>!seen.has(q.id)&&(seen.add(q.id),true));
   const next=before.concat(add);
